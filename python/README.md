@@ -11,6 +11,11 @@ This directory works as a single `uv` workspace containing all project packages,
 - `packages/autogen-ext`: implementations for ecosystem integrations. For example, `autogen-ext[openai]` provides the OpenAI model client.
 - `packages/autogen-studio`: a web-based IDE for building and running AutoGen agents.
 
+## 📚 Documentation
+
+- **[DEPLOYMENT.md](./DEPLOYMENT.md)** - 🚀 **本地部署与模型配置完整指南**（包含千问云端、Ollama本地模型等配置）
+- **[Migration Guide](./migration_guide.md)** - Migrating from 0.2.x to 0.4.x
+
 ## Migrating from 0.2.x?
 
 Please refer to the [migration guide](./migration_guide.md) for how to migrate your code from 0.2.x to 0.4.x.

@@ -75,29 +75,25 @@ def build_qwen_dashscope() -> OpenAIChatCompletionClient:
     )
 
 
-def build_zhipu_glm() -> OpenAIChatCompletionClient:
-    """构建智谱 GLM OpenAI 兼容客户端。
-
-    必需环境变量:
-        ZHIPU_API_KEY: 智谱 AI API Key
+def build_ollama_qwen3() -> OpenAIChatCompletionClient:
+    """构建 Ollama 本地模型（qwen3:4b）OpenAI 兼容客户端。
 
     可选环境变量:
-        ZHIPU_MODEL: 模型名称，默认 glm-4-plus
-        ZHIPU_BASE_URL: API 端点，默认官方地址
+        OLLAMA_MODEL: 模型名称，默认 qwen3:4b
+        OLLAMA_BASE_URL: API 端点，默认 http://localhost:11434/v1
     """
-    api_key = _require_env("ZHIPU_API_KEY")
     return OpenAIChatCompletionClient(
-        model=os.getenv("ZHIPU_MODEL", "glm-4-plus"),
-        api_key=api_key,
+        model=os.getenv("OLLAMA_MODEL", "qwen3:4b"),
+        api_key="ollama",  # Ollama 不需要真实的 API Key
         base_url=os.getenv(
-            "ZHIPU_BASE_URL",
-            "https://open.bigmodel.cn/api/paas/v4/",
+            "OLLAMA_BASE_URL",
+            "http://localhost:11434/v1",
         ),
         model_info={
-            "family": "glm",
-            "function_calling": True,
+            "family": "qwen",
+            "function_calling": False,
             "json_output": True,
-            "structured_output": True,
+            "structured_output": False,
             "vision": False,
         },
     )
@@ -109,7 +105,7 @@ def build_zhipu_glm() -> OpenAIChatCompletionClient:
 # 便于在应用或测试中按名称动态获取模型客户端
 MODEL_BUILDERS: Dict[str, Callable[[], OpenAIChatCompletionClient]] = {
     "qwen_dashscope": build_qwen_dashscope,
-    "zhipu_glm": build_zhipu_glm,
+    "ollama_qwen3": build_ollama_qwen3,
 }
 
 
