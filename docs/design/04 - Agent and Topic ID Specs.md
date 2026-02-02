@@ -1,47 +1,47 @@
-# Agent and Topic ID Specs
+# Agent 与 Topic ID 规范
 
-This document describes the structure, constraints, and behavior of Agent IDs and Topic IDs.
+本文档描述 Agent ID 与 Topic ID 的结构、约束与行为。
 
 ## Agent ID
 
-### Required Attributes
+### 必填属性
 
 #### type
 
-- Type: `string`
-- Description: The agent type is not an agent class. It associates an agent with a specific factory function, which produces instances of agents of the same agent `type`. For example, different factory functions can produce the same agent class but with different constructor perameters.
-- Constraints: UTF8 and only contain alphanumeric letters (a-z) and (0-9), or underscores (\_). A valid identifier cannot start with a number, or contain any spaces.
-- Examples:
+- 类型：`string`
+- 说明：agent type 不是 agent 类本身。它将 agent 与特定工厂函数关联，该工厂函数用于生成同一 agent `type` 的实例。例如，不同的工厂函数可以生成相同的 agent 类，但使用不同的构造参数。
+- 约束：UTF8，仅包含字母（a-z）、数字（0-9）或下划线（_）。有效标识符不能以数字开头，且不能包含空格。
+- 示例：
   - `code_reviewer`
   - `WebSurfer`
   - `UserProxy`
 
 #### key
 
-- Type: `string`
-- Description: The agent key is an instance identifier for the given agent `type`
-- Constraints: UTF8 and only contain characters between (inclusive) ascii 32 (space) and 126 (~).
-- Examples:
+- 类型：`string`
+- 说明：agent key 是给定 agent `type` 的实例标识符
+- 约束：UTF8，仅包含 ASCII 32（空格）到 126（~）之间的字符（含边界）。
+- 示例：
   - `default`
-  - A memory address
-  - a UUID string
+  - 某个内存地址
+  - UUID 字符串
 
 ## Topic ID
 
-### Required Attributes
+### 必填属性
 
 #### type
 
-- Type: `string`
-- Description: Topic type is usually defined by application code to mark the type of messages the topic is for.
-- Constraints: UTF8 and only contain alphanumeric letters (a-z) and (0-9), ':', '=', or underscores (\_). A valid identifier cannot start with a number, or contain any spaces.
-- Examples:
+- 类型：`string`
+- 说明：topic type 通常由应用代码定义，用于标识该主题承载的消息类型。
+- 约束：UTF8，仅包含字母（a-z）、数字（0-9）、`:`、`=` 或下划线（_）。有效标识符不能以数字开头，且不能包含空格。
+- 示例：
   - `GitHub_Issues`
 
 #### source
 
-- Type: `string`
-- Description: Topic source is the unique identifier for a topic within a topic type. It is typically defined by application data.
-- Constraints: UTF8 and only contain characters between (inclusive) ascii 32 (space) and 126 (~).
-- Examples:
+- 类型：`string`
+- 说明：topic source 是某个 topic type 下的唯一主题标识，通常由应用数据定义。
+- 约束：UTF8，仅包含 ASCII 32（空格）到 126（~）之间的字符（含边界）。
+- 示例：
   - `github.com/{repo_name}/issues/{issue_number}`

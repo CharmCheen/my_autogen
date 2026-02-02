@@ -1,26 +1,26 @@
-# AutoGen Services
+# AutoGen 服务
 
-## Overview
+## 概述
 
-Each AutoGen agent system has one or more Agent Workers and a set of services for managing/supporting the agents. The services and workers can all be hosted in the same process or in a distributed system.  When in the same process communication and event delivery is in-memory. When distributed, workers communicate with the service over gRPC. In all cases, events are packaged as CloudEvents. There are multiple options for the backend services:
+每个 AutoGen agent 系统都包含一个或多个 Agent Worker 以及一组用于管理/支持 agents 的服务。服务与 worker 可以部署在同一进程中，也可以分布式部署。在同一进程中，通信与事件投递在内存中进行；分布式情况下，worker 通过 gRPC 与服务通信。无论哪种情况，事件都以 CloudEvents 封装。后端服务有多种选项：
 
-- In-Memory: the Agent Workers and Services are all hosted in the same process and communicate over in-memory channels. Available for python and .NET.
-- Python only: Agent workers communicate with a python hosted service that implements an in-memory message bus and agent registry.
-- Micrososft Orleans: a distributed actor system that can host the services and workers, enables distributed state with persistent storage, can leverage multiple event bus types, and cross-language agent communication.
-- *Roadmap: support for other languages distributed systems such as dapr or Akka.*
+- 内存模式：Agent Worker 与 Services 部署在同一进程内，通过内存通道通信。Python 与 .NET 均可用。
+- 仅 Python：Agent Worker 与一个由 Python 承载的服务通信，该服务实现内存消息总线与 agent 注册表。
+- Microsoft Orleans：分布式 actor 系统，可承载服务与 worker，提供带持久化存储的分布式状态，支持多种事件总线类型，并支持跨语言 agent 通信。
+- *路线图：支持其他语言的分布式系统，如 dapr 或 Akka。*
 
-The Services in the system include:
+系统中的服务包括：
 
-- Worker: Hosts the Agents and is a client to the Gateway
-- Gateway:
--- RPC gateway for the other services APIs
--- Provides an RPC bridge between the workers and the Event Bus
--- Message Session state (track message queues/delivery)
-- Registry: keeps track of the {agents:agent types}:{Subscription/Topics} in the system and which events they can handle
--- *Roadmap: add lookup api in gateway*
-- AgentState: persistent state for agents
-- Routing: delivers events to agents based on their subscriptions+topics
--- *Roadmap: add subscription management APIs*
-- *Roadmap: Management APIs for the Agent System*
-- *Roadmap: Scheduling: manages placement of agents*
-- *Roadmap: Discovery: allows discovery of agents and services*
+- Worker：承载 agents，并作为 Gateway 的客户端
+- Gateway：
+-- 其他服务 API 的 RPC 网关
+-- 在 worker 与 Event Bus 之间提供 RPC 桥接
+-- 消息会话状态（跟踪消息队列/投递）
+- Registry：跟踪系统中的 {agents:agent types}:{Subscription/Topics} 以及它们可处理的事件
+-- *路线图：在 Gateway 中添加查询 API*
+- AgentState：agent 的持久化状态
+- Routing：根据订阅+主题将事件投递给 agent
+-- *路线图：添加订阅管理 API*
+- *路线图：Agent 系统管理 API*
+- *路线图：调度：管理 agent 的放置*
+- *路线图：发现：支持发现 agents 与服务*

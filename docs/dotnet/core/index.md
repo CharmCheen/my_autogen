@@ -1,26 +1,26 @@
 # AutoGen Core
 
-AutoGen Core for .NET follows the same concepts and conventions of its Python counterpart. In fact, in order to understand the concepts in the .NET version, we recommend reading the [Python documentation](https://microsoft.github.io/autogen/stable/) first. Unless otherwise stated, the concepts in the Python version map to .NET.
+AutoGen Core 的 .NET 版本沿用其 Python 版本的概念与约定。事实上，为了理解 .NET 版概念，我们建议先阅读 [Python 文档](https://microsoft.github.io/autogen/stable/)。除非另有说明，Python 版本中的概念可映射到 .NET。
 
-Any important differences between the language versions are documented in the [Differences from Python](./differences-from-python.md) section. For things that only affect a given language, such as dependency injection or host builder patterns, these will not be specified in the differences document.
+语言版本之间的重要差异记录在 [与 Python 的差异](./differences-from-python.md) 中。仅影响特定语言的内容（如依赖注入或 Host Builder 模式）不会在差异文档中列出。
 
-## Getting Started
+## 快速开始
 
-You can obtain the SDK as a nuget package or by cloning the repository. The SDK is available on [NuGet](https://www.nuget.org/packages/Microsoft.AutoGen).
-Minimally you will need the following:
+你可以通过 NuGet 包获取 SDK，或克隆仓库。SDK 位于 [NuGet](https://www.nuget.org/packages/Microsoft.AutoGen)。
+最低需要以下包：
 
 ```bash
 dotnet add package Microsoft.AutoGen.Contracts
 dotnet add package Microsoft.AutoGen.Core
 ```
 
-See [Installation](./installation.md) for more detailed notes on installing all the related packages. 
+更多安装说明见 [安装](./installation.md)。
 
-You can quickly get started by looking at the samples in the [samples](https://github.com/microsoft/autogen/tree/main/dotnet/samples) directory of the repository.
+你可以通过仓库 [samples](https://github.com/microsoft/autogen/tree/main/dotnet/samples) 目录快速上手。
 
-### Creating an Agent
+### 创建一个 Agent
 
-To create an agent, you can inherit from BaseAgent and implement event handlers for the events you care about. Here is a minimal example demonstrating how to inherit from BaseAgent and implement an event handler:
+创建 agent 时，可以继承 BaseAgent 并实现关心事件的处理器。以下是最小示例，展示如何继承 BaseAgent 并实现事件处理器：
 
 ```csharp
 public class MyAgent : BaseAgent, IHandle<MyMessage>
@@ -28,16 +28,16 @@ public class MyAgent : BaseAgent, IHandle<MyMessage>
     // ...
     public async ValueTask HandleAsync(MyMessage item, MessageContext context)
     {
-        // ...logic here...
+        // ...逻辑...
     }
 }
 ```
 
-By overriding BaseAgent, you gain access to the runtime and logging utilities, and by implementing IHandle<T>, you can easily define event-handling methods for your custom messages.
+通过继承 BaseAgent 可获得运行时与日志工具；通过实现 IHandle<T> 可为自定义消息定义事件处理方法。
 
-### Running an Agent in an Application
+### 在应用中运行 Agent
 
-To run your agent in an application, you can use the `AgentsAppBuilder` class. Here is an example of how to run an agent 'HelloAgent' in an application:
+要在应用中运行 agent，可使用 `AgentsAppBuilder`。下面是运行名为 "HelloAgent" 的 agent 的示例：
 
 ```csharp
 AgentsAppBuilder appBuilder = new AgentsAppBuilder()
@@ -46,42 +46,42 @@ AgentsAppBuilder appBuilder = new AgentsAppBuilder()
 
 var app = await appBuilder.BuildAsync();
 
-// start the app by publishing a message to the runtime
+// 通过向运行时发布消息来启动应用
 await app.PublishMessageAsync(new NewMessageReceived
 {
     Message = "Hello from .NET"
 }, new TopicId("HelloTopic"));
 
-// Wait for shutdown
+// 等待关闭
 await app.WaitForShutdownAsync();
 ```
 
-## .NET SDK Runtimes
+## .NET SDK 运行时
 
-The .NET SDK includes both an InMemory Single Process Runtime and a Remote, Distributed Runtime meant for running your agents in the cloud. The Distributed Runtime supports running agents in python and in .NET, allowing those agents to talk to one another. The distributed runtime uses Microsoft Orleans to provide resilience, persistence, and integration with messaging services such as Azure Event Hubs.  The xlang functionality requires that your agent's Messages are serializable as CloudEvents.  The messages are exchanged as CloudEvents over Grpc, and the runtime takes care of ensuring that the messages are delivered to the correct agents. 
+.NET SDK 同时包含内存单进程运行时与远程分布式运行时，后者用于在云端运行 agents。分布式运行时支持在 Python 与 .NET 中运行 agents，允许它们彼此通信。分布式运行时使用 Microsoft Orleans 提供弹性、持久化，以及与 Azure Event Hubs 等消息服务的集成。xlang 功能要求 agent 的消息可序列化为 CloudEvents。消息通过 Grpc 以 CloudEvents 交换，运行时负责确保消息正确投递到对应 agent。
 
-To use the Distributed Runtime, you will need to add the following package to your project:
+要使用分布式运行时，需要在项目中添加以下包：
 
 ```bash
 dotnet add package Microsoft.AutoGen.Core.Grpc
 ```
 
-This is the package that runs in the application with your agent(s) and connects to the distributed system. 
+该包运行在包含 agent 的应用中并连接到分布式系统。
 
-To Run the backend/server side you need:
+运行后端/服务端需要：
 
 ```bash
 dotnet add package Microsoft.AutoGen.RuntimeGateway
 dotnet add package Microsoft.AutoGen.AgentHost
 ```
 
-You can run the backend on its own:
+你可以单独运行后端：
 
 ```bash
 dotnet run --project Microsoft.AutoGen.AgentHost
 ```
 
-or you can include it inside your own application:
+或将其集成到自己的应用中：
 
 ```csharp
 using Microsoft.AutoGen.RuntimeGateway;
@@ -89,20 +89,20 @@ using Microsoft.AutoGen.AgentHost;
 var autogenBackend = await Microsoft.AutoGen.RuntimeGateway.Grpc.Host.StartAsync(local: false, useGrpc: true).ConfigureAwait(false);
 ```
 
-You can also install the runtime as a dotnet tool:
+你也可以将运行时安装为 dotnet 工具：
 
 ```
 dotnet pack --no-build --configuration Release --output './output/release' -bl\n
 dotnet tool install --add-source ./output/release Microsoft.AutoGen.AgentHost
-# run the tool
+# 运行工具
 # dotnet agenthost 
-# or just...  
+# 或者直接...
 agenthost 
 ```
 
-### Running Multiple Agents and the Runtime in separate processes with .NET Aspire
+### 使用 .NET Aspire 在不同进程运行多个 Agent 与运行时
 
-The [Hello.AppHost project](https://github.com/microsoft/autogen/blob/50d7587a4649504af3bb79ab928b2a3882a1a394/dotnet/samples/Hello/Hello.AppHost/Program.cs#L4) illustrates how to orchestrate a distributed system with multiple agents and the runtime in separate processes using .NET Aspire. It also points to a [python agent that illustrates how to run agents in different languages in the same distributed system](https://github.com/microsoft/autogen/blob/50d7587a4649504af3bb79ab928b2a3882a1a394/python/samples/core_xlang_hello_python_agent/README.md#L1).
+[Hello.AppHost 项目](https://github.com/microsoft/autogen/blob/50d7587a4649504af3bb79ab928b2a3882a1a394/dotnet/samples/Hello/Hello.AppHost/Program.cs#L4) 展示了如何使用 .NET Aspire 编排分布式系统，将多个 agent 与运行时运行在不同进程中。文中还引用了一个 [Python agent 示例](https://github.com/microsoft/autogen/blob/50d7587a4649504af3bb79ab928b2a3882a1a394/python/samples/core_xlang_hello_python_agent/README.md#L1)，用于展示如何在同一分布式系统中运行不同语言的 agents。
 
 ```csharp
 // Copyright (c) Microsoft Corporation. All rights reserved.
@@ -117,7 +117,7 @@ var client = builder.AddProject<Projects.HelloAgent>("HelloAgentsDotNET")
     .WithEnvironment("AGENT_HOST", backend.GetEndpoint("https"))
     .WithEnvironment("STAY_ALIVE_ON_GOODBYE", "true")
     .WaitFor(backend);
-// xlang is over http for now - in prod use TLS between containers
+// xlang 目前通过 http 通信 —— 生产环境应使用容器间 TLS
 builder.AddPythonApp("HelloAgentsPython", "../../../../python/samples/core_xlang_hello_python_agent", "hello_python_agent.py", "../../.venv")
     .WithReference(backend)
     .WithEnvironment("AGENT_HOST", backend.GetEndpoint("http"))
@@ -132,11 +132,11 @@ Console.WriteLine("Backend URL: " + url);
 await app.WaitForShutdownAsync();
 ```
 
-You can find more examples of how to use Aspire and XLang agents in the [Microsoft.AutoGen.Integration.Tests.AppHost](https://github.com/microsoft/autogen/blob/acd7e864300e24a3ee67a89a916436e8894bb143/dotnet/test/Microsoft.AutoGen.Integration.Tests.AppHosts/) directory. 
+更多关于使用 Aspire 与 XLang agents 的示例见 [Microsoft.AutoGen.Integration.Tests.AppHost](https://github.com/microsoft/autogen/blob/acd7e864300e24a3ee67a89a916436e8894bb143/dotnet/test/Microsoft.AutoGen.Integration.Tests.AppHosts/) 目录。
 
-### Configuring Logging
+### 配置日志
 
-The SDK uses the Microsoft.Extensions.Logging framework for logging. Here is an example appsettings.json file with some useful defaults:
+SDK 使用 Microsoft.Extensions.Logging 框架记录日志。以下 appsettings.json 示例包含一些有用的默认配置：
 
 ```json
 {
@@ -160,6 +160,6 @@ The SDK uses the Microsoft.Extensions.Logging framework for logging. Here is an 
 }
 ```
 
-### Defining Message Types in Protocol Buffers
+### 在 Protocol Buffers 中定义消息类型
 
-A convenient way to define common event or message types to be used in both python and .NET agents is to define your events. This is covered here: [Using Protocol Buffers to Define Message Types](./protobuf-message-types.md).
+在 Python 与 .NET agents 中复用通用事件或消息类型的一种便捷方式是用 Protocol Buffers 定义事件。详见：[使用 Protocol Buffers 定义消息类型](./protobuf-message-types.md)。

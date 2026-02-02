@@ -1,52 +1,51 @@
-# Agent Worker Protocol
+# Agent Worker 协议
 
-## System architecture
+## 系统架构
 
-The system consists of multiple processes, each being either a _service_ process or a _worker_ process.
-Worker processes host application code (agents) and connect to a service process.
-Workers advertise the agents which they support to the service, so the service can decide which worker to place agents on.
-Service processes coordinate placement of agents on worker processes and facilitate communication between agents.
+系统由多个进程组成，每个进程要么是 _service_ 进程，要么是 _worker_ 进程。
+worker 进程承载应用代码（agents）并连接到 service 进程。
+worker 会向 service 声明其支持的 agent，使得 service 可以决定将 agent 放置到哪个 worker 上。
+service 进程负责协调 agents 在 worker 进程上的放置，并促进 agents 之间的通信。
 
-Agent instances are identified by the tuple of `(namespace: str, name: str)`.
-Both _namespace_ and _name_ are application-defined.
-The _namespace_ has no semantics implied by the system: it is free-form, and any semantics are implemented by application code.
-The _name_ is used to route requests to a worker which supports agents with that name.
-Workers advertise the set of agent names which they are capable of hosting to the service.
-Workers activate agents in response to messages received from the service.
-The service uses the _name_ to determine where to place currently-inactive agents, maintaining a mapping from agent name to a set of workers which support that agent.
-The service maintains a _directory_ mapping active agent ids to worker processes which host the identified agent.
+agent 实例由 `(namespace: str, name: str)` 这一元组标识。
+`namespace` 与 `name` 均由应用定义。
+`namespace` 在系统层面没有预设语义：它是自由格式，具体语义由应用代码实现。
+`name` 用于将请求路由到支持该名称的 worker。
+worker 会向 service 声明其能够承载的 agent 名称集合。
+worker 在收到来自 service 的消息后激活 agent。
+service 使用 `name` 决定将当前不活跃的 agent 放置到哪个 worker 上，并维护从 agent 名称到支持该 agent 的 worker 集合的映射。
+service 维护一个 _directory_，将活跃的 agent id 映射到承载该 agent 的 worker 进程。
 
-### Agent lifecycle
+### Agent 生命周期
 
-Agents are never explicitly created or destroyed. When a request is received for an agent which is not currently active, it is the responsibility of the service to select a worker which is capable of hosting that agent, and to route the request to that worker.
+agent 不会被显式创建或销毁。当收到对当前不活跃 agent 的请求时，service 负责选择能够承载该 agent 的 worker，并将请求路由到该 worker。
 
-## Worker protocol flow
+## Worker 协议流程
 
-The worker protocol has three phases, following the lifetime of the worker: initialization, operation, and termination.
+worker 协议有三个阶段，贯穿 worker 的生命周期：初始化、运行、终止。
 
-### Initialization
+### 初始化
 
-When the worker process starts, it initiates a connection to a service process, establishing a bi-directional communication channel which messages are passed across.
-Next, the worker issues zero or more `RegisterAgentType(name: str)` messages, which tell the service the names of the agents which it is able to host.
+worker 进程启动时，会与 service 进程建立连接，形成双向通信通道，用于消息传递。
+随后，worker 会发送零个或多个 `RegisterAgentType(name: str)` 消息，告知 service 自己能够承载的 agent 名称。
 
-* TODO: What other metadata should the worker give to the service?
-* TODO: Should we give the worker a unique id which can be used to identify it for its lifetime? Should we allow this to be specified by the worker process itself?
+* TODO：worker 还应向 service 提供哪些元数据？
+* TODO：是否应为 worker 分配可在其生命周期内识别的唯一 id？是否允许由 worker 进程自行指定？
 
-### Operation
+### 运行
 
-Once the connection is established, and the service knows which agents the worker is capable of hosting, the worker may begin receiving requests for agents which it must host.
-Placement of agents happens in response to an `Event(...)` or `RpcRequest(...)` message.
-The worker maintains a _catalog_ of locally active agents: a mapping from agent id to agent instance.
-If a message arrives for an agent which does not have a corresponding entry in the catalog, the worker activates a new instance of that agent and inserts it into the catalog.
-The worker dispatches the message to the agent:
+连接建立且 service 知道 worker 可承载哪些 agent 之后，worker 开始接收需要其承载的 agent 请求。
+agent 的放置由 `Event(...)` 或 `RpcRequest(...)` 消息触发。
+worker 维护一个本地活跃 agent 的 _catalog_：从 agent id 到 agent 实例的映射。
+如果收到某个 agent 的消息但 catalog 中没有对应条目，worker 会激活该 agent 的新实例并插入到 catalog。
+worker 将消息分派给 agent：
 
-* For an `Event`, the agent processes the message and no response is generated.
-* For an `RpcRequest` message, the agent processes the message and generates a response of type `RpcResponse`. The worker routes the response to the original sender.
+* 对于 `Event`，agent 处理消息但不生成响应。
+* 对于 `RpcRequest`，agent 处理消息并生成 `RpcResponse` 响应。worker 将响应路由回原始发送者。
 
-The worker maintains a mapping of outstanding requests, identified by `RpcRequest.id`, to a promise for a future `RpcResponse`.
-When an `RpcResponse` is received, the worker finds the corresponding request id and fulfils the promise using that response.
-If no response is received in a specified time frame (eg, 30s), the worker breaks the promise with a timeout error.
+worker 维护一个待处理请求映射（由 `RpcRequest.id` 标识），对应一个未来的 `RpcResponse`。收到 `RpcResponse` 后，worker 找到对应请求 id 并用该响应兑现 promise。
+若在指定时间内（例如 30 秒）未收到响应，worker 将以超时错误终止该 promise。
 
-### Termination
+### 终止
 
-When the worker is ready to shutdown, it closes the connection to the service and terminates. The service de-registers the worker and all agent instances which were hosted on it.
+当 worker 准备关闭时，会关闭与 service 的连接并终止。service 将注销该 worker 以及其承载的所有 agent 实例。

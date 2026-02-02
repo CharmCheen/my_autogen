@@ -5,7 +5,7 @@ _disableAffix: true
 <div class="center">
     <h1>AutoGen .NET</h1>
     <p class="subheader">
-    A <i>.NET</i> framework for building AI agents and applications
+    用于构建 AI 智能体与应用的 <i>.NET</i> 框架
     </p>
 </div>
 
@@ -24,14 +24,14 @@ _disableAffix: true
 [![NuGet version](https://badge.fury.io/nu/Microsoft.AutoGen.AgentHost.svg)](https://badge.fury.io/nu/Microsoft.AutoGen.AgentHost)
 
 </p>
-        <p class="card-text">An event-driven programming framework for building scalable multi-agent AI systems.</p>
+        <p class="card-text">用于构建可扩展多智能体 AI 系统的事件驱动编程框架。</p>
 
-- Deterministic and dynamic agentic workflows for business processes
-- Research on multi-agent collaboration
-- Distributed agents for multi-language applications
-- integration with event-driven, cloud native applications
+- 面向业务流程的确定性与动态智能体工作流
+- 多智能体协作研究
+- 面向多语言应用的分布式智能体
+- 与事件驱动、云原生应用集成
 
-*Start here if you are building workflows or distributed agent systems*
+*如果你要构建工作流或分布式智能体系统，请从这里开始*
 
 <p>
 <div class="highlight">
@@ -41,11 +41,13 @@ _disableAffix: true
 dotnet add package Microsoft.AutoGen.Contracts
 dotnet add package Microsoft.AutoGen.Core
 
-# optionally - for distributed agent systems:
+# 可选：用于分布式智能体系统
+
 dotnet add package Microsoft.AutoGen.RuntimeGateway.Grpc
 dotnet add package Microsoft.AutoGen.AgentHost
 
-# other optional packages
+# 其他可选包
+
 dotnet add package Microsoft.AutoGen.Agents
 dotnet add package Microsoft.AutoGen.Extensions.Aspire
 dotnet add package Microsoft.AutoGen.Extensions.MEAI
@@ -54,7 +56,7 @@ dotnet add package Microsoft.AutoGen.Extensions.SemanticKernel
 
 </pre></div></p>
 <p>
-        <a href="core/index.md" class="btn btn-primary">Get started</a>
+        <a href="core/index.md" class="btn btn-primary">开始使用</a>
       </div>
     </div>
   </div>
@@ -62,8 +64,8 @@ dotnet add package Microsoft.AutoGen.Extensions.SemanticKernel
     <div class="card">
       <div class="card-body">
         <h5 class="card-title">AgentChat</h5>
-        <p class="card-text">A programming framework for building conversational single and multi-agent applications. Built on Core.</p>
-        <a href="#" class="btn btn-primary disabled">Coming soon</a>
+        <p class="card-text">用于构建对话式单智能体与多智能体应用的编程框架，构建于 Core 之上。</p>
+        <a href="#" class="btn btn-primary disabled">即将推出</a>
       </div>
     </div>
   </div>

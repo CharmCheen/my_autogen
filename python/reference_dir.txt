@@ -1,0 +1,43 @@
+CampusMate/
+│
+├── data/                     # 【数据层】所有的 Mock 数据在这里
+│   ├── courses.json          # 模拟课表
+│   ├── market_items.json     # 模拟二手商品
+│   ├── rules.pdf             # RAG 用的校规文档
+│   └── knowledge_db/         # 向量数据库缓存 (ChromaDB)
+│
+├── tools/                    # 【工具层】Agent 的手和脚
+│   ├── __init__.py
+│   ├── campus_tools.py       # 定义查课表、查空教室的函数
+│   ├── market_tools.py       # 定义二手搜索、上架的函数
+│   └── notification_tools.py # 定义发邮件、生成日历的函数
+│
+├── agents/                   # 【智能层】Agent 的人设定义
+│   ├── __init__.py
+│   ├── config.py             # LLM API Key 配置
+│   └── definitions.py        # 定义 AssistantAgent, UserProxy, GroupChat
+│
+├── app.py                    # 【用户前台】Chainlit 启动入口 (主程序)
+├── admin.py                  # 【管理后台】Streamlit 启动入口 (上帝模式)
+│
+├── requirements.txt          # 依赖包列表
+├── Dockerfile                # 部署配置 (给华为云用)
+└── docker-compose.yml        # 一键启动脚本
+
+【本次更改位置】
+- python/CampusMate/data/courses.json
+- python/CampusMate/data/market_items.json
+- python/CampusMate/data/rules.pdf
+- python/CampusMate/data/knowledge_db/.gitkeep
+- python/CampusMate/tools/__init__.py
+- python/CampusMate/tools/campus_tools.py
+- python/CampusMate/tools/market_tools.py
+- python/CampusMate/tools/notification_tools.py
+- python/CampusMate/agents/__init__.py
+- python/CampusMate/agents/config.py
+- python/CampusMate/agents/definitions.py
+- python/CampusMate/app.py
+- python/CampusMate/admin.py
+- python/CampusMate/requirements.txt
+- python/CampusMate/Dockerfile
+- python/CampusMate/docker-compose.yml
